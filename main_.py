@@ -1,6 +1,7 @@
 from recommend_property_ import recommend_property
 from search_property_ import search_property
 from auto_check_ import auto_check
+from result_ import search_result
 
 import streamlit as st
 #from streamlit_folium import st_folium 
@@ -269,8 +270,9 @@ if st.sidebar.button("検索"):
     # Streamlitに地図を表示
     folium_static(mymap, width=1200, height=800)
 
+search_result()
+
 #メールで共有
 st.write("余裕があったら実施")
 st.button("共有する")
 
-# streamlit run 240516_Step3-1_example.py
