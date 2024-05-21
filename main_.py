@@ -1,5 +1,6 @@
 from recommend_property_ import recommend_property
 from search_property_ import search_property
+from auto_check_ import auto_check
 
 import streamlit as st
 #from streamlit_folium import st_folium 
@@ -32,9 +33,28 @@ if 'lifestyle' not in st.session_state:
     st.session_state.lifestyle = "エコノミー"
 
 if "rent_min_value" not in st.session_state:
-    st.session_state.rent_min_value = 50000
+    st.session_state.rent_min_value = 5
 if "rent_max_value" not in st.session_state:
-    st.session_state.rent_max_value = 100000
+    st.session_state.rent_max_value = 10
+
+def update_rent_range():
+    lifestyle = st.session_state.lifestyle
+    income = st.session_state.income
+    if lifestyle == "エコノミー":
+        min_rent_percent = 0.15
+        max_rent_percent = 0.2
+    elif lifestyle == "スタンダード":
+        min_rent_percent = 0.2
+        max_rent_percent = 0.25
+    else:  # ラグジュアリー
+        min_rent_percent = 0.25
+        max_rent_percent = 0.3
+
+    temporary_min_rent = min_rent_percent * income / 12
+    temporary_max_rent = max_rent_percent * income / 12
+
+    st.session_state.rent_min_value = f"{temporary_min_rent:,.1f}"
+    st.session_state.rent_max_value = f"{temporary_max_rent:,.1f}"
 
 
 #===ライフスタイル情報===============================
@@ -43,8 +63,9 @@ st.sidebar.write("入力情報を基に、検索条件を自動で提案しま�
 #===年収============================================
 
 #スライダーで年収を選択
-income = st.sidebar.slider("年収（万円）",
+st.session_state.income = st.sidebar.slider("年収（万円）",
                                     value = st.session_state.income,
+                                    on_change = update_rent_range,
                                     min_value = 200,
                                     max_value = 2000,
                                     step = 50)
@@ -54,9 +75,9 @@ col1, col2, col3 = st.columns(3)
 with col1:
     number_adult = st.sidebar.number_input("大人", min_value= 1, max_value = 4,step = 1)
 with col2:
-    number_child = st.sidebar.number_input("小人", min_value= 0, max_value = 3, step = 1)
+    number_child = st.sidebar.number_input("小人", min_value= 0, max_value = 3, step = 1) 
 with col3:
-    number_baby = st.sidebar.number_input("うち未就学児", min_value= 0, max_value = number_child, step = 1)
+    number_baby = st.sidebar.number_input("うち未就学児", min_value= 0, max_value = number_child, step = 1)    
 
 #===通勤地（最寄駅）=================================
 
@@ -67,6 +88,7 @@ commute_station =  st.sidebar.multiselect("主な行先（通勤・通学）の�
 })
 st.sidebar.write("詳細は後程APIを検証してから実装する（場合によっては気合と根性？）")
 
+
 #===物件周辺に希望する施設===========================
 facility1 = st.sidebar.text_input("欲しい近隣施設1")
 facility2 = st.sidebar.text_input("欲しい近隣施設2")
@@ -74,7 +96,8 @@ facility3 = st.sidebar.text_input("欲しい近隣施設3")
 
 #===ライフスタイルの選択============================
 st.session_state.lifestyle = st.sidebar.radio("希望するライフスタイル", ('エコノミー', 'スタンダード', 'ラグジュアリー'),
-                                                index=['エコノミー', 'スタンダード', 'ラグジュアリー'].index(st.session_state.lifestyle))
+                                                  index=['エコノミー', 'スタンダード', 'ラグジュアリー'].index(st.session_state.lifestyle),
+                                                  on_change=update_rent_range)
 lifestyle=st.session_state.lifestyle
 
 #===提案開始============================
@@ -106,11 +129,11 @@ st.sidebar.title("検索条件（詳細）")
 #===希望駅（最寄駅）================================================
 
 #=========賃料設定===========
-range_rent_price = st.sidebar.slider("賃料（下限～上限）",
-                  value = (st.session_state.rent_min_value,st.session_state.rent_max_value),
-                   min_value = 50000,
-                    max_value = 500000,
-                     step = 5000 )
+range_rent_price = st.sidebar.slider("賃料（万円）",
+                  value = (float(st.session_state.rent_min_value),float(st.session_state.rent_max_value)),
+                   min_value = 5.0,
+                    max_value = 50.0,
+                     step = 0.5 )
 
 rent_price_min, rent_price_max = range_rent_price
 
@@ -174,6 +197,8 @@ if 'checkbox_states' not in st.session_state:
         'three_DK_LDK': False,
         'four_DK_LDK': False
     }
+
+auto_check(number_adult,number_child)
 
 # 全解除のチェックボックス
 st.session_state.checkbox_states['all_uncheck'] = st.sidebar.checkbox(
