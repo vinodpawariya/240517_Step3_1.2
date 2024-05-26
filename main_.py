@@ -19,7 +19,7 @@ st.snow()
 #=================================================================
 
 area_min_value = 25
-area_max_value = 50
+area_max_value = 75
 
 walk_min_value = 0
 walk_max_value = 10
@@ -103,7 +103,7 @@ lifestyle=st.session_state.lifestyle
 
 #===提案開始============================
 if st.sidebar.button("提案してもらう"):
-    df_recommend_property = recommend_property(income, lifestyle, number_adult, number_child, number_baby, commute_station, facility1, facility2, facility3)
+    df_recommend_property = recommend_property(st.session_state.income, lifestyle, number_adult, number_child, number_baby, commute_station, facility1, facility2, facility3)
     # セッション状態に保存
     st.session_state.df_recommend_property = df_recommend_property
     st.dataframe(st.session_state.df_recommend_property)

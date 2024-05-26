@@ -16,4 +16,3 @@ def search_result():
 
     st.write("=======================")
 
-search_result()
