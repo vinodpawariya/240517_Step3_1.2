@@ -33,6 +33,7 @@ def search_property(ku, rent_price_min, rent_price_max, add_fee_included, reikin
         placeholders = ', '.join('?' for _ in madori) 
        
     if add_fee_included and reikin: #管理費込みで礼金0のものの場合
+        print("ok")  
         # 条件をもとにデータベースクエリの実行
         query = """
         SELECT * FROM df_table 
@@ -47,12 +48,16 @@ def search_property(ku, rent_price_min, rent_price_max, add_fee_included, reikin
         params = (rent_price_min, rent_price_max, area_min_value, area_max_value, years_min_value, years_max_value, walk_min_value, walk_max_value) + tuple(madori)
         c.execute(query, params)
         result = c.fetchall()        
-
         # kuに該当するデータを抽出
         filtered_result = []
-        for row in result:
-            if any(ward in row[2] for ward in ku):
-                filtered_result.append(row)
+        if ku:
+            for row in result:
+                print(row)
+                print(ku)
+                if any(ward in row[2] for ward in ku):
+                    filtered_result.append(row)
+        else:
+            filtered_result = result
 
         # 一致するデータの表示
         if filtered_result:
@@ -66,7 +71,6 @@ def search_property(ku, rent_price_min, rent_price_max, add_fee_included, reikin
         query = """
         SELECT * FROM df_table 
         WHERE 家賃 >= ? AND 家賃 <= ? 
-        AND (礼金 = 0 OR 礼金 = '') 
         AND 面積 >= ? AND 面積 <= ? 
         AND 築年数 >= ? AND 築年数 <= ? 
         AND `アクセス①1徒歩(分)` >= ? AND `アクセス①1徒歩(分)` <= ?  
@@ -79,9 +83,14 @@ def search_property(ku, rent_price_min, rent_price_max, add_fee_included, reikin
 
         # kuに該当するデータを抽出
         filtered_result = []
-        for row in result:
-            if any(ward in row[2] for ward in ku):
-                filtered_result.append(row)
+        if ku:
+            for row in result:
+                print(row)
+                print(ku)
+                if any(ward in row[2] for ward in ku):
+                    filtered_result.append(row)
+        else:
+            filtered_result = result
 
         # 一致するデータの表示
         if filtered_result:
@@ -107,9 +116,14 @@ def search_property(ku, rent_price_min, rent_price_max, add_fee_included, reikin
 
         # kuに該当するデータを抽出
         filtered_result = []
-        for row in result:
-            if any(ward in row[2] for ward in ku):
-                filtered_result.append(row)
+        if ku:
+            for row in result:
+                print(row)
+                print(ku)
+                if any(ward in row[2] for ward in ku):
+                    filtered_result.append(row)
+        else:
+            filtered_result = result
 
         # 一致するデータの表示
         if filtered_result:
@@ -122,7 +136,6 @@ def search_property(ku, rent_price_min, rent_price_max, add_fee_included, reikin
         query = """
         SELECT * FROM df_table 
         WHERE 家賃 >= ? AND 家賃 <= ? 
-        AND (礼金 = 0 OR 礼金 = '') 
         AND 面積 >= ? AND 面積 <= ? 
         AND 築年数 >= ? AND 築年数 <= ? 
         AND `アクセス①1徒歩(分)` >= ? AND `アクセス①1徒歩(分)` <= ? 
@@ -132,12 +145,18 @@ def search_property(ku, rent_price_min, rent_price_max, add_fee_included, reikin
         params = (rent_price_min, rent_price_max, area_min_value, area_max_value, years_min_value, years_max_value, walk_min_value, walk_max_value) + tuple(madori)
         c.execute(query, params)
         result = c.fetchall()
-
+        print("else")
+        print(result)
         # kuに該当するデータを抽出
         filtered_result = []
-        for row in result:
-            if any(ward in row[2] for ward in ku):
-                filtered_result.append(row)
+        if ku:
+            for row in result:
+                print(row)
+                print(ku)
+                if any(ward in row[2] for ward in ku):
+                    filtered_result.append(row)
+        else:
+            filtered_result = result
 
         # 一致するデータの表示
         if filtered_result:        
