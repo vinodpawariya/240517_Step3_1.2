@@ -29,6 +29,7 @@ def recommend_property(temporary_min_rent, temporary_max_rent, madori_recommend,
     # データベースに接続
     conn = sqlite3.connect('merged_DB.db')
     c = conn.cursor()
+    print(commute_station)
 
     if madori_recommend:
         placeholders = ', '.join('?' for _ in madori_recommend)
@@ -127,15 +128,15 @@ def recommend_property(temporary_min_rent, temporary_max_rent, madori_recommend,
     previous_station = None
     for index, row in df_recommend_property.iterrows():
         # 直前の駅名と比較
-        if previous_station is not None and row["アクセス①1駅名"] == previous_station:
+        if row["アクセス①1駅名"] == previous_station:
             # 直前の駅名と一致する場合、直前の結果を使う
-            df_recommend_property.at[index, commute_station[0] + "までの時間"] = previous_result
+            df_recommend_property.at[index, commute_station + "駅までの時間"] = previous_result
         else:
             # 直前の駅名と一致しない場合、新しい結果を取得
             departure_station = row["アクセス①1駅名"]
             
             # 経路の取得先URL
-            route_url = "https://transit.yahoo.co.jp/search/result?from="+departure_station+"&flatlon=&to="+ commute_station[0] +"&y=2024&m=05&d=30&hh=07&m0=1&m2=0"
+            route_url = "https://transit.yahoo.co.jp/search/result?from="+departure_station+"&flatlon=&to="+ commute_station +"&y=2024&m=05&d=30&hh=07&m0=1&m2=0"
             
             # Requestsを利用してWebページを取得する
             route_response = requests.get(route_url)
@@ -153,7 +154,7 @@ def recommend_property(temporary_min_rent, temporary_max_rent, madori_recommend,
                 match = re.search(r'\d+分', comment)
                 print(match.group())
             # commute_station の値を "東京駅までの距離" 列に保存
-            df_recommend_property.at[index, commute_station[0] + "までの時間"] = match.group()
+            df_recommend_property.at[index, commute_station + "駅までの時間"] = match.group()
             # 直前の結果を更新
             previous_station = row["アクセス①1駅名"]
             previous_result = match.group()
