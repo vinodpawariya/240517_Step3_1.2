@@ -102,7 +102,7 @@ if st.sidebar.button("提案してもらう"):
     madori_recommend = auto_check(number_adult,number_child)
 
     df_recommend_property, df_facility_info = recommend_property(temporary_min_rent, temporary_max_rent, madori_recommend, commute_station, facility1, facility2, facility3)
-    
+
     if facility1:
         st.write("<span style='color:red'>赤：</span>",facility1, unsafe_allow_html=True)
     if facility2:
@@ -111,7 +111,7 @@ if st.sidebar.button("提案してもらう"):
         st.write("<span style='color:blue'>青：</span>",facility3, unsafe_allow_html=True)
     
     # 地図の初期設定
-    map_center = [35.681236, 139.767125]  # マップの中心の座標（ここでは東京タワーの座標を設定）
+    map_center = [df_recommend_property["latitude"].mean(), df_recommend_property["longitude"].mean()]  # マップの中心の座標（ここでは東京タワーの座標を設定）
     mymap = folium.Map(location=map_center, zoom_start=12)
 
 
@@ -122,7 +122,16 @@ if st.sidebar.button("提案してもらう"):
         "facility3": 'blue'
     }
 
-    # データフレームの各行に対してマーカーを追加
+    # データフレームの各行を地図にマーカーとして追加
+    for i, row in df_facility_info.iterrows():
+        folium.CircleMarker(
+            location=[row["緯度"], row["経度"]],
+            radius=2, 
+            fill=True, 
+            fill_color=facility_colors.get(row["施設種類"]),
+            color=facility_colors.get(row["施設種類"])
+        ).add_to(mymap)
+
     for index, row in df_recommend_property.iterrows():
         #ポップアップに表示するHTMLコンテンツ
         popup_html = f"""
@@ -130,21 +139,22 @@ if st.sidebar.button("提案してもらう"):
          <b>アドレス:</b> {row['アドレス']}<br>
         <b>家賃:</b> {row['家賃']}万円<br>
         <b>間取り:</b> {row['間取り']}<br>
-        <b>よく行く駅までの距離:</b> {row[-1]}<br>
         <div style="width: 150px; height: auto;">
             <img src="{row['間取画像URL']}" style="width: 100%; height: auto;">
         </div><br>
+        <b>最寄駅から主な行き先（駅）までかかる時間:</b> {row[-1]}<br>
         <a href="{row['物件詳細URL']}" target="_blank">物件詳細</a>
         """
         popup = folium.Popup(popup_html, max_width=400)
         folium.Marker(
             location=[row['latitude'], row['longitude']],  # マーカーの座標
             popup=popup  # マーカーをクリックしたときに表示されるポップアップ
-        ).add_to(mymap)
+        ).add_to(mymap)    
 
     # Streamlitに地図を表示
     folium_static(mymap)
-    
+
+
     # セッション状態に保存
     st.session_state.df_recommend_property = df_recommend_property
     st.dataframe(st.session_state.df_recommend_property)
