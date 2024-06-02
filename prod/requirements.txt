@@ -6,3 +6,4 @@ googlemaps
 requests
 beautifulsoup4
 geopy
+sqlite3
