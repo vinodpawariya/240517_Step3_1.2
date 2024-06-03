@@ -6,6 +6,7 @@ import json
 from bs4 import BeautifulSoup
 import os
 import re
+import os
 
 #############
 #【関数名】
@@ -30,6 +31,7 @@ def recommend_property(temporary_min_rent, temporary_max_rent, madori_recommend,
     db_path = os.path.join(os.path.dirname(__file__), "merged_DB.db")
     
     # データベースに接続
+    conn = sqlite3.connect(db_path)
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
     print(commute_station)
@@ -107,16 +109,16 @@ def recommend_property(temporary_min_rent, temporary_max_rent, madori_recommend,
                     facility_data.extend(facility_row_data)  # 施設情報を追加
 
             if all_facilities_found: #入力した施設が全てあった場合
-                st.write('以下の情報が見つかりました:')
+                st.write('以下の物件が見つかりました:')
                 result = result_filtered
             else: #入力した施設が全くヒットしなかった場合
-                st.write('該当する情報が見つかりませんでした')
+                st.write('該当する物件が見つかりませんでした')
                 result = []
         else: #施設入力がなかった場合
             facility_data = []
-            st.write('以下の情報が見つかりました:')
+            st.write('以下の物件が見つかりました:')
     else:
-        st.write('該当する情報が見つかりませんでした')
+        st.write('該当する物件が見つかりませんでした')
         facility_data = []
     # データベース接続のクローズ
     conn.close()
