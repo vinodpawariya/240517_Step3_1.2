@@ -1,6 +1,6 @@
 import streamlit as st
 import sqlite3
-
+import os
 #############
 #【関数名】
 #物件の検索（search_property）
@@ -25,8 +25,10 @@ import pandas as pd
 
 def search_property(ku, rent_price_min, rent_price_max, add_fee_included, reikin, teiki, area_min_value, area_max_value,walk_min_value, walk_max_value, years_min_value, years_max_value, madori):
     print(ku)
+    # データベースファイルの相対パスを指定
+    db_path = os.path.join(os.path.dirname(__file__), 'merged_DB.db')
     # データベースに接続
-    conn = sqlite3.connect('merged_DB.db')
+    conn = sqlite3.connect(db_path) 
     c = conn.cursor()
 
     if madori:
@@ -61,10 +63,10 @@ def search_property(ku, rent_price_min, rent_price_max, add_fee_included, reikin
 
         # 一致するデータの表示
         if filtered_result:
-            st.write('以下の情報が見つかりました:')
+            st.write('以下の物件が見つかりました:')
             #for row in result:
         else:
-            st.write('該当する情報が見つかりませんでした')
+            st.write('該当する物件が見つかりませんでした')
 
     elif add_fee_included: #管理費込みの場合
         # 条件をもとにデータベースクエリの実行
@@ -94,9 +96,9 @@ def search_property(ku, rent_price_min, rent_price_max, add_fee_included, reikin
 
         # 一致するデータの表示
         if filtered_result:
-            st.write('以下の情報が見つかりました:')
+            st.write('以下の物件が見つかりました:')
         else:
-            st.write('該当する情報が見つかりませんでした')
+            st.write('該当する物件が見つかりませんでした')
 
     elif reikin: #礼金0のものの場合
         # 条件をもとにデータベースクエリの実行
@@ -127,9 +129,9 @@ def search_property(ku, rent_price_min, rent_price_max, add_fee_included, reikin
 
         # 一致するデータの表示
         if filtered_result:
-            st.write('以下の情報が見つかりました:')
+            st.write('以下の物件が見つかりました:')
         else:
-            st.write('該当する情報が見つかりませんでした')
+            st.write('該当する物件が見つかりませんでした')
 
     else: #家賃のみ
         # 条件をもとにデータベースクエリの実行
@@ -160,9 +162,9 @@ def search_property(ku, rent_price_min, rent_price_max, add_fee_included, reikin
 
         # 一致するデータの表示
         if filtered_result:        
-            st.write('以下の情報が見つかりました:')
+            st.write('以下の物件が見つかりました:')
         else:
-            st.write('該当する情報が見つかりませんでした')
+            st.write('該当する物件が見つかりませんでした')
 
     # データベース接続のクローズ
     conn.close()
