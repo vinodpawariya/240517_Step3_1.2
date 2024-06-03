@@ -5,6 +5,7 @@ import requests
 import json
 from bs4 import BeautifulSoup
 import re
+import os
 
 #############
 #【関数名】
@@ -26,8 +27,12 @@ import re
 #############
 
 def recommend_property(temporary_min_rent, temporary_max_rent, madori_recommend, commute_station, facility1, facility2, facility3):
+
+    # データベースファイルの相対パスを指定
+    db_path = os.path.join(os.path.dirname(__file__), 'merged_DB.db')
+
     # データベースに接続
-    conn = sqlite3.connect('merged_DB.db')
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
     print(commute_station)
 
